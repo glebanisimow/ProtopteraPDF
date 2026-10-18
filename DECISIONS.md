@@ -40,3 +40,8 @@
 
 - `'self'` is required on top of IPC: the engine fetches `pdfium.wasm` and fallback fonts from the app origin (`http://tauri.localhost`). IPC on Windows uses `http://ipc.localhost`; `ipc:` is kept for other platforms.
 - Dev CSP adds `'unsafe-inline'` styles (Vite injects `<style>` during HMR) and the Vite websocket. Production keeps `style-src 'self'`: Svelte applies dynamic styles via CSSOM (`style.cssText`), which CSP does not block. To verify at runtime in M0.
+
+## 2026-10-18 — PDF association pulled forward from M3
+
+- Owner asked for double-click in Explorer now. `bundle.fileAssociations` registers the `ProtopteraPDF.Document` ProgID; `src-tauri/nsis/hooks.nsh` adds Capabilities + `RegisteredApplications` + `OpenWithProgids` so the app shows up in Default apps and "Open with", and removes them on uninstall.
+- Windows protects the default handler (UserChoice hash), so an installer cannot silently take over `.pdf`; the user confirms once. Interactive installs open `ms-settings:defaultapps?registeredAppUser=ProtopteraPDF` at the end.
