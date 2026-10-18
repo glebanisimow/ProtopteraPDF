@@ -1,4 +1,5 @@
 mod files;
+mod page_labels;
 mod watch;
 
 use std::collections::HashMap;
@@ -137,6 +138,18 @@ async fn save_document_as(
     Ok(Some(path.to_string_lossy().into_owned()))
 }
 
+/// Page labels for an opened document, or None when it defines none (labels then equal page numbers).
+#[tauri::command]
+async fn page_labels(path: String, allowlist: State<'_, Allowlist>) -> Result<Option<Vec<String>>, FileError> {
+    let path = PathBuf::from(path);
+    if !allowlist.is_allowed(&path) {
+        return Err(FileError { code: FileErrorCode::NotAllowed, detail: path.display().to_string() });
+    }
+    tauri::async_runtime::spawn_blocking(move || page_labels::read_labels(&path))
+        .await
+        .map_err(|e| io_error(e.to_string()))
+}
+
 #[tauri::command]
 async fn open_in_new_window(app: AppHandle, path: String) -> Result<(), String> {
     open_window(&app, Some(PathBuf::from(path))).map(|_| ()).map_err(|e| e.to_string())
@@ -181,7 +194,8 @@ pub fn run() {
             open_document,
             save_document,
             save_document_as,
-            open_in_new_window
+            open_in_new_window,
+            page_labels
         ])
         .run(tauri::generate_context!())
         .expect("error while running ProtopteraPDF");
