@@ -1,41 +1,64 @@
 <script lang="ts">
-  // M0: continuous scroll with plain page renders. Tiling, zoom modes and overlays arrive in M1.
+  import type { PdfLinkTarget } from '@embedpdf/models';
+  import { useDocumentState } from '@embedpdf/core/svelte';
   import { Viewport } from '@embedpdf/plugin-viewport/svelte';
   import { Scroller, type PageLayout } from '@embedpdf/plugin-scroll/svelte';
-  import { RenderLayer } from '@embedpdf/plugin-render/svelte';
+  import { ZoomGestureWrapper } from '@embedpdf/plugin-zoom/svelte';
+  import { GlobalPointerProvider } from '@embedpdf/plugin-interaction-manager/svelte';
+  import PageView from './PageView.svelte';
 
-  let { documentId }: { documentId: string } = $props();
+  let {
+    documentId,
+    inverted,
+    onlink,
+  }: {
+    documentId: string;
+    inverted: boolean;
+    onlink: (target: PdfLinkTarget) => void;
+  } = $props();
+
+  const docState = useDocumentState(() => documentId);
+  const scale = $derived(docState.current?.scale ?? 1);
 </script>
 
-<Viewport {documentId} class="viewport">
-  <Scroller {documentId}>
-    {#snippet renderPage(page: PageLayout)}
-      <div class="page" style:width="{page.width}px" style:height="{page.height}px">
-        <RenderLayer {documentId} pageIndex={page.pageIndex} class="page-render" />
-      </div>
-    {/snippet}
-  </Scroller>
-</Viewport>
+<div class="document" class:inverted>
+  <GlobalPointerProvider {documentId} class="pointer-root">
+    <Viewport {documentId} class="viewport">
+      <!-- Ctrl+wheel and pinch zoom around the pointer. -->
+      <ZoomGestureWrapper {documentId}>
+        <Scroller {documentId}>
+          {#snippet renderPage(page: PageLayout)}
+            <PageView {documentId} {page} {scale} {onlink} />
+          {/snippet}
+        </Scroller>
+      </ZoomGestureWrapper>
+    </Viewport>
+  </GlobalPointerProvider>
+</div>
 
 <style>
-  :global(.viewport) {
+  .document {
+    flex: 1;
+    min-inline-size: 0;
+    min-block-size: 0;
+    display: flex;
+  }
+
+  .document :global(.pointer-root) {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
+  }
+
+  .document :global(.viewport) {
     flex: 1;
     min-block-size: 0;
     background: var(--color-canvas);
   }
 
-  .page {
-    position: relative;
-    background: var(--color-paper);
-    box-shadow: var(--shadow-page);
-  }
-
-  .page :global(.page-render) {
-    position: absolute;
-    inset: 0;
-    inline-size: 100%;
-    block-size: 100%;
-    pointer-events: none;
-    user-select: none;
+  /* Reading in the dark: invert only page pixels, never the UI. */
+  .inverted :global(.page-render),
+  .inverted :global(.page-tiles) {
+    filter: invert(1) hue-rotate(180deg);
   }
 </style>

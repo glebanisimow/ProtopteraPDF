@@ -26,6 +26,9 @@ export function saveDocumentAs(suggestedName: string, bytes: Uint8Array): Promis
   return invoke('save_document_as', bytes, { headers: { 'x-name': encodeURIComponent(suggestedName) } });
 }
 
+/** Labels for every page, or null when the PDF has no /PageLabels. */
+export const pageLabels = (path: string) => invoke<string[] | null>('page_labels', { path });
+
 export const openInNewWindow = (path: string) => invoke<void>('open_in_new_window', { path });
 
 export const FILE_CHANGED_EVENT = 'file-changed';

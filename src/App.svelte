@@ -6,8 +6,18 @@
   import { ViewportPluginPackage } from '@embedpdf/plugin-viewport/svelte';
   import { ScrollPluginPackage } from '@embedpdf/plugin-scroll/svelte';
   import { RenderPluginPackage } from '@embedpdf/plugin-render/svelte';
+  import { TilingPluginPackage } from '@embedpdf/plugin-tiling/svelte';
+  import { InteractionManagerPluginPackage } from '@embedpdf/plugin-interaction-manager/svelte';
+  import { ZoomPluginPackage, ZoomMode } from '@embedpdf/plugin-zoom/svelte';
+  import { SpreadPluginPackage } from '@embedpdf/plugin-spread/svelte';
+  import { RotatePluginPackage } from '@embedpdf/plugin-rotate/svelte';
+  import { SearchPluginPackage } from '@embedpdf/plugin-search/svelte';
+  import { SelectionPluginPackage } from '@embedpdf/plugin-selection/svelte';
+  import { BookmarkPluginPackage } from '@embedpdf/plugin-bookmark';
+  import { ThumbnailPluginPackage } from '@embedpdf/plugin-thumbnail/svelte';
   import { FONT_FALLBACK, WASM_URL } from './lib/engine';
   import { t } from './lib/strings';
+  import { ZOOM_MAX, ZOOM_MIN } from './lib/zoom';
   import Shell from './Shell.svelte';
   import Banner from './components/Banner.svelte';
 
@@ -17,8 +27,18 @@
   const plugins = [
     createPluginRegistration(DocumentManagerPluginPackage, { maxDocuments: 1 }),
     createPluginRegistration(ViewportPluginPackage, { viewportGap: 16 }),
-    createPluginRegistration(ScrollPluginPackage, { defaultPageGap: 12 }),
+    // Two pages of render buffer around the viewport (default 4) keep the 500-page scan under 600 MB.
+    createPluginRegistration(ScrollPluginPackage, { defaultPageGap: 12, defaultBufferSize: 2 }),
     createPluginRegistration(RenderPluginPackage, { withForms: true, withAnnotations: true }),
+    createPluginRegistration(TilingPluginPackage, { tileSize: 768, overlapPx: 2.5, extraRings: 0 }),
+    createPluginRegistration(InteractionManagerPluginPackage),
+    createPluginRegistration(ZoomPluginPackage, { defaultZoomLevel: ZoomMode.Automatic, minZoom: ZOOM_MIN, maxZoom: ZOOM_MAX }),
+    createPluginRegistration(SpreadPluginPackage),
+    createPluginRegistration(RotatePluginPackage),
+    createPluginRegistration(SearchPluginPackage, { showAllResults: true }),
+    createPluginRegistration(SelectionPluginPackage),
+    createPluginRegistration(BookmarkPluginPackage),
+    createPluginRegistration(ThumbnailPluginPackage, { width: 150, gap: 12, labelHeight: 18, autoScroll: true }),
   ];
 </script>
 

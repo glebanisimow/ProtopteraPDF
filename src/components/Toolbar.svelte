@@ -1,46 +1,20 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { t } from '../lib/strings';
-  import type { ThemePreference } from '../lib/theme';
-  import IconButton from './IconButton.svelte';
 
-  let {
-    title,
-    status,
-    theme,
-    onopen,
-    ontheme,
-  }: {
-    title: string | null;
-    status: string | null;
-    theme: ThemePreference;
-    onopen: () => void;
-    ontheme: () => void;
-  } = $props();
+  let { start, center, end }: { start?: Snippet; center?: Snippet; end?: Snippet } = $props();
 </script>
 
 <header class="toolbar" role="toolbar" aria-label={t.toolbar.label}>
-  <div class="group">
-    <IconButton icon="sidebar" label={t.toolbar.sidebar} shortcut="F9" disabled onclick={() => {}} />
-    <IconButton icon="open" label={t.toolbar.open} shortcut="Ctrl+O" onclick={onopen} />
-  </div>
-
-  <div class="title" aria-live="polite">
-    {#if title}
-      <span class="name">{title}</span>
-    {:else}
-      <span class="brand">PROTOPTERA<span class="brand-light">PDF</span></span>
-    {/if}
-    {#if status}<span class="status">{status}</span>{/if}
-  </div>
-
-  <div class="group">
-    <IconButton icon="theme" label={t.toolbar.theme[theme]} onclick={ontheme} />
-  </div>
+  <div class="group start">{@render start?.()}</div>
+  <div class="group center">{@render center?.()}</div>
+  <div class="group end">{@render end?.()}</div>
 </header>
 
 <style>
   .toolbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: var(--space-2);
     block-size: var(--size-toolbar);
@@ -52,39 +26,39 @@
 
   .group {
     display: flex;
+    align-items: center;
     gap: var(--space-1);
+    min-inline-size: 0;
   }
 
-  .title {
-    flex: 1;
-    min-inline-size: 0;
-    display: flex;
-    align-items: baseline;
+  .center {
     justify-content: center;
     gap: var(--space-3);
-    font-size: var(--font-size-sm);
   }
 
-  .name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .end {
+    justify-content: flex-end;
   }
 
-  .status {
-    color: var(--color-text-muted);
-    white-space: nowrap;
+  /* Thin divider between button groups. */
+  .toolbar :global(.sep) {
+    inline-size: 1px;
+    block-size: 20px;
+    margin-inline: var(--space-1);
+    background: var(--color-border);
+    flex: none;
   }
 
   /* Brand wordmark: the only all-caps text, as in Protoptera Player. */
-  .brand {
+  .toolbar :global(.brand) {
     font-family: var(--font-brand);
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--color-accent-text);
+    white-space: nowrap;
   }
 
-  .brand-light {
+  .toolbar :global(.brand-light) {
     font-weight: 300;
     color: var(--color-text);
   }

@@ -24,6 +24,7 @@ export type Action =
   | 'sidebar'
   | 'fullscreen'
   | 'closeDocument'
+  | 'copy'
   | 'escape';
 
 export const KEYMAP: Record<Action, string[]> = {
@@ -51,6 +52,7 @@ export const KEYMAP: Record<Action, string[]> = {
   sidebar: ['F9'],
   fullscreen: ['F11'],
   closeDocument: ['Ctrl+W'],
+  copy: ['Ctrl+C'],
   escape: ['Escape'],
 };
 
@@ -84,7 +86,7 @@ export function matchAction(e: KeyLike, typing = false): Action | null {
   if (!action || !typing || TYPING_SAFE.has(action)) return action;
   // In text fields only Ctrl/Alt chords and function keys act; plain keys belong to the field.
   const isChord = e.ctrlKey || e.altKey || e.metaKey || /^F\d+$/.test(e.key);
-  const fieldEditing = ['undo', 'redo', 'docStart', 'docEnd'].includes(action);
+  const fieldEditing = ['undo', 'redo', 'docStart', 'docEnd', 'copy'].includes(action);
   return isChord && !fieldEditing ? action : null;
 }
 

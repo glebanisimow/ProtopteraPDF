@@ -28,6 +28,15 @@ npm test                # vitest
 cd src-tauri && cargo test
 ```
 
+## Тестовые файлы
+
+`node scripts/gen-fixtures.mjs` генерирует синтетику в `fixtures/` (каталог не коммитится):
+
+- `book-labels.pdf` — 312 страниц, /PageLabels (i–iv, затем 1…), оглавление, ссылки: внутренняя, https, `javascript:`, `file:`, /Launch;
+- `scan-500.pdf` — 500 страниц-картинок, как скан книги, для проверки бюджетов.
+
+Подписанный PDF и XFA-форму владелец даёт сам.
+
 ## Дизайн-пак
 
 Путь к паку лежит в `design.config.json` в поле `designPackPath`. Файл машинный и в git не попадает. Источник истины — пак: `tokens.json` (W3C DTCG), `icons/*.svg`, PNG бренда.

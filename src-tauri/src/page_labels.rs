@@ -154,7 +154,7 @@ fn parse_range(doc: &Document, start_index: u32, dict: &Dictionary) -> Option<Ra
 /// which matches Latin-1 for printable characters.
 fn decode_text_string(bytes: &[u8]) -> String {
     if let Some(utf16) = bytes.strip_prefix(&[0xFE, 0xFF]) {
-        let units: Vec<u16> = utf16.chunks_exact(2).map(|c| u16::from_be_bytes([c[0], c[1]])).collect();
+        let units: Vec<u16> = utf16.as_chunks::<2>().0.iter().map(|c| u16::from_be_bytes(*c)).collect();
         return String::from_utf16_lossy(&units);
     }
     if let Some(utf8) = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]) {
