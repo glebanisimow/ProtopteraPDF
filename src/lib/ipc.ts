@@ -11,7 +11,8 @@ export function isFileError(e: unknown): e is FileError {
   return typeof e === 'object' && e !== null && 'code' in e && 'detail' in e;
 }
 
-export const takeInitialPath = () => invoke<string | null>('take_initial_path');
+/** The path this window was opened with. Rust hands it out once, so it is fetched once per window. */
+export const initialPath: Promise<string | null> = invoke<string | null>('take_initial_path');
 
 export const pickPdf = () => invoke<string | null>('pick_pdf');
 

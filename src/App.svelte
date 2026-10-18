@@ -26,8 +26,9 @@
   <Banner kind="danger">{t.errors.engine}</Banner>
 {:else if pdf.engine}
   <EmbedPDF engine={pdf.engine} {plugins}>
-    {#snippet children()}
-      <Shell />
+    {#snippet children(state)}
+      <!-- EmbedPDF remounts its children when plugins become ready; mount the shell once, after that. -->
+      {#if state.pluginsReady}<Shell />{/if}
     {/snippet}
   </EmbedPDF>
 {/if}

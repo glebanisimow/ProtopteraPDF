@@ -127,7 +127,7 @@
       applyTheme(pref);
     });
 
-    void ipc.takeInitialPath().then((initial) => {
+    void ipc.initialPath.then((initial) => {
       if (initial) void openPath(initial);
     });
 
