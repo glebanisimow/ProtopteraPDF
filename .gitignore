@@ -1,0 +1,8 @@
+node_modules/
+dist/
+public/engine/
+src-tauri/target/
+src-tauri/gen/
+fixtures/
+design.config.json
+*.log
