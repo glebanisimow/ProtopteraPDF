@@ -9,6 +9,7 @@
   import { TilingPluginPackage } from '@embedpdf/plugin-tiling/svelte';
   import { InteractionManagerPluginPackage } from '@embedpdf/plugin-interaction-manager/svelte';
   import { ZoomPluginPackage, ZoomMode } from '@embedpdf/plugin-zoom/svelte';
+  import { PanPluginPackage } from '@embedpdf/plugin-pan/svelte';
   import { SpreadPluginPackage } from '@embedpdf/plugin-spread/svelte';
   import { RotatePluginPackage } from '@embedpdf/plugin-rotate/svelte';
   import { SearchPluginPackage } from '@embedpdf/plugin-search/svelte';
@@ -33,6 +34,8 @@
     createPluginRegistration(TilingPluginPackage, { tileSize: 768, overlapPx: 2.5, extraRings: 0 }),
     createPluginRegistration(InteractionManagerPluginPackage),
     createPluginRegistration(ZoomPluginPackage, { defaultZoomLevel: ZoomMode.Automatic, minZoom: ZOOM_MIN, maxZoom: ZOOM_MAX }),
+    // Hand tool is the default: press and drag scrolls the document; text selection is a toggle (H).
+    createPluginRegistration(PanPluginPackage, { defaultMode: 'always' }),
     createPluginRegistration(SpreadPluginPackage),
     createPluginRegistration(RotatePluginPackage),
     createPluginRegistration(SearchPluginPackage, { showAllResults: true }),

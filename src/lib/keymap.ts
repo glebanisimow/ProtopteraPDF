@@ -21,6 +21,7 @@ export type Action =
   | 'redo'
   | 'editMode'
   | 'invert'
+  | 'handTool'
   | 'sidebar'
   | 'fullscreen'
   | 'closeDocument'
@@ -49,6 +50,7 @@ export const KEYMAP: Record<Action, string[]> = {
   redo: ['Ctrl+Y', 'Ctrl+Shift+Z'],
   editMode: ['E'],
   invert: ['I'],
+  handTool: ['H'],
   sidebar: ['F9'],
   fullscreen: ['F11'],
   closeDocument: ['Ctrl+W'],

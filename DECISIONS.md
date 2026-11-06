@@ -64,3 +64,9 @@
 ## 2026-10-18 — /PageLabels via lopdf parses the whole file
 
 - `lopdf::Document::load` parses every object, off the main thread (`spawn_blocking`) after the document is shown. On the 25 MB scan this is not on the critical path; for very large files it costs transient memory in the host process. Labels fall back to page numbers on any parse error (encrypted files included).
+
+## 2026-11-06 — Hand tool is the default pointer mode
+
+- Owner request: press on the page and drag to scroll, with a hand cursor. `@embedpdf/plugin-pan` (already a pinned dependency) is registered with `defaultMode: 'always'`: cursor `grab`, `grabbing` while dragging, scroll is clamped by the viewport.
+- Text selection only works in `pointerMode`, so a toolbar toggle and `H` switch hand ↔ text selection. Pan plugin's own `togglePan` returns to the default mode (pan again), so the toggle activates `pointerMode` explicitly.
+- Links stop `pointerdown` propagation, so a press on a link still follows it instead of starting a drag.

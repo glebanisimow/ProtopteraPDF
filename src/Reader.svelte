@@ -12,6 +12,8 @@
   import { useSearch } from '@embedpdf/plugin-search/svelte';
   import { useSelectionCapability } from '@embedpdf/plugin-selection/svelte';
   import { useBookmarkCapability } from '@embedpdf/plugin-bookmark/svelte';
+  import { usePan } from '@embedpdf/plugin-pan/svelte';
+  import { useInteractionManagerCapability } from '@embedpdf/plugin-interaction-manager/svelte';
   import * as ipc from './lib/ipc';
   import { NavHistory } from './lib/history';
   import type { Action } from './lib/keymap';
@@ -61,6 +63,18 @@
   const search = useSearch(() => documentId);
   const selection = useSelectionCapability();
   const bookmarks = useBookmarkCapability();
+  const pan = usePan(() => documentId);
+  const interaction = useInteractionManagerCapability();
+
+  /** Hand (drag to scroll) is the default mode; the other one is plain text selection. */
+  function toggleHand(): void {
+    if (pan.isPanning) {
+      interaction.provides?.forDocument(documentId).activate('pointerMode');
+    } else {
+      selection.provides?.forDocument(documentId).clear();
+      pan.provides?.enablePan();
+    }
+  }
 
   const history = new NavHistory();
   let canGoBack = $state(false);
@@ -226,6 +240,7 @@
       docStart: () => scrollTo(0),
       docEnd: () => scrollTo(total - 1),
       invert: () => (inverted = !inverted),
+      handTool: toggleHand,
       sidebar: () => (sidebarOpen = !sidebarOpen),
       copy: () => selection.provides?.forDocument(documentId).copyToClipboard(),
       escape: () => {
@@ -324,6 +339,8 @@
   {/snippet}
 
   {#snippet end()}
+    <IconButton icon={pan.isPanning ? 'hand' : 'text'} label={pan.isPanning ? t.toolbar.hand : t.toolbar.select} shortcut="H" pressed={pan.isPanning} onclick={toggleHand} />
+    <span class="sep"></span>
     <IconButton icon="spread" label={t.toolbar.spread} pressed={spread.spreadMode !== SpreadMode.None} onclick={toggleSpread} />
     <IconButton icon="rotate" label={t.toolbar.rotate} onclick={() => rotate.provides?.rotateForward()} />
     <span class="sep"></span>
